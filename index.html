@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <meta charset="UTF-8">
+  <title>משחק מבוך</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f0f0f0;
+      direction: rtl;
+    }
+    #maze {
+      display: grid;
+      grid-template-columns: repeat(5, 60px);
+      grid-template-rows: repeat(5, 60px);
+      gap: 2px;
+      margin: 50px auto;
+      width: max-content;
+    }
+    .cell {
+      width: 60px;
+      height: 60px;
+      background-color: white;
+      border: 1px solid #999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .wall {
+      background-color: black;
+    }
+    .player {
+      background-color: royalblue;
+    }
+    .goal {
+      background-color: gold;
+    }
+    #win-message {
+      display: none;
+      text-align: center;
+      font-size: 24px;
+      margin-top: 30px;
+    }
+    #cat-image {
+      display: none;
+      margin: 20px auto;
+      width: 300px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<h2 style="text-align:center;">ברוך הבא למבוך!</h2>
+
+<div id="maze"></div>
+<div id="win-message">יש לך קטן</div>
+<img id="cat-image" src="https://placekitten.com/400/300" alt="חתולים מתחבקים" />
+
+<script>
+  const mazeLayout = [
+    [0, 1, 0, 0, 0],
+    [0, 1, 0, 1, 0],
+    [0, 0, 0, 1, 0],
+    [1, 1, 0, 1, 0],
+    [0, 0, 0, 0, 2]
+  ];
+
+  const maze = document.getElementById("maze");
+  let playerPos = { x: 0, y: 0 };
+
+  function renderMaze() {
+    maze.innerHTML = "";
+    for (let y = 0; y < mazeLayout.length; y++) {
+      for (let x = 0; x < mazeLayout[y].length; x++) {
+        const cell = document.createElement("div");
+        cell.classList.add("cell");
+        if (mazeLayout[y][x] === 1) cell.classList.add("wall");
+        if (mazeLayout[y][x] === 2) cell.classList.add("goal");
+        if (x === playerPos.x && y === playerPos.y) cell.classList.add("player");
+        maze.appendChild(cell);
+      }
+    }
+  }
+
+  function move(dx, dy) {
+    const newX = playerPos.x + dx;
+    const newY = playerPos.y + dy;
+    if (
+      newX >= 0 && newX < 5 &&
+      newY >= 0 && newY < 5 &&
+      mazeLayout[newY][newX] !== 1
+    ) {
+      playerPos = { x: newX, y: newY };
+      renderMaze();
+      if (mazeLayout[newY][newX] === 2) {
+        document.getElementById("win-message").style.display = "block";
+        document.getElementById("cat-image").style.display = "block";
+      }
+    }
+  }
+
+  document.addEventListener("keydown", (e) => {
+    switch (e.key) {
+      case "ArrowUp": move(0, -1); break;
+      case "ArrowDown": move(0, 1); break;
+      case "ArrowLeft": move(-1, 0); break;
+      case "ArrowRight": move(1, 0); break;
+    }
+  });
+
+  renderMaze();
+</script>
+
+</body>
+</html>
